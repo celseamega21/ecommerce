@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth.models import User
+from account.models import CustomUser
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -8,29 +8,59 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
     
         token["email"] = user.email
-
         return token
     
-class UserSerializers(serializers.HyperlinkedModelSerializer):
-    class Meta: 
-        model = User
-        fields = ['id', 'url', 'username', 'email']
+class UserAllSerializers(serializers.HyperlinkedModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'url', 'image', 'username', 'email', 'role', 'phone', 'address']
         extra_kwargs = {
             'url': {'view_name': 'user-detail', 'lookup_field': 'pk'}
         }
 
         def create(self, validated_data):
-            user = User.objects.create(**validated_data)
+            user = CustomUser.objects.create(**validated_data)
+            return user
+            
+class BuyerSerializers(serializers.HyperlinkedModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta: 
+        model = CustomUser
+        fields = ['id', 'url', 'image', 'username', 'email', 'role', 'phone', 'address']
+        extra_kwargs = {
+            'url': {'view_name': 'buyer-detail', 'lookup_field': 'pk'}
+        }
+
+        def create(self, validated_data):
+            user = CustomUser.objects.create(**validated_data)
             return user
         
+class SellerSerializers(serializers.HyperlinkedModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'url', 'image', 'username', 'email', 'role', 'phone', 'address']
+        extra_kwargs = {
+            'url': {'view_name': 'seller-detail', 'lookup_field': 'pk'}
+        }
+
+        def create(self, validated_data):
+            user = CustomUser.objects.create(**validated_data)
+            return user
+
 class UserRegistrationSerializers(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'password2']
+        model = CustomUser
+        fields = ['username', 'email', 'password', 'password2', 'role', 'phone', 'address', 'is_verified']
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'is_verified': {'default': False}
         }
     
     def validate(self, data):
@@ -40,9 +70,13 @@ class UserRegistrationSerializers(serializers.ModelSerializer):
     
     def create(self, validated_data):
         validated_data.pop('password2')
-        user = User.objects.create_user(
+        user = CustomUser.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email', ''),
-            password=validated_data['password']
+            password=validated_data['password'],
+            role=validated_data['role'],
+            phone=validated_data['phone'],
+            address=validated_data['address'],
+            is_verified=validated_data['is_verified'],
         )
         return user

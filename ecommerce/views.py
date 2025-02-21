@@ -2,7 +2,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status, viewsets, permissions, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserRegistrationSerializers, BuyerSerializers, SellerSerializers, UserAllSerializers
+from .serializers import UserRegistrationSerializers, BuyerSerializers, SellerSerializers
 from account.models import CustomUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -124,11 +124,5 @@ class BuyerViewSet(viewsets.ModelViewSet):
 class SellerViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.filter(role__iexact='SELLER')
     serializer_class = SellerSerializers
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-class UserAllViewSet(viewsets.ModelViewSet):
-    queryset =  CustomUser.objects.all()
-    serializer_class = UserAllSerializers
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]

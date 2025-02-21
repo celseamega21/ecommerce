@@ -9,20 +9,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     
         token["email"] = user.email
         return token
-    
-class UserAllSerializers(serializers.HyperlinkedModelSerializer):
-    image = serializers.ImageField(use_url=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'url', 'image', 'username', 'email', 'role', 'phone', 'address']
-        extra_kwargs = {
-            'url': {'view_name': 'user-detail', 'lookup_field': 'pk'}
-        }
-
-        def create(self, validated_data):
-            user = CustomUser.objects.create(**validated_data)
-            return user
             
 class BuyerSerializers(serializers.HyperlinkedModelSerializer):
     image = serializers.ImageField(use_url=True)

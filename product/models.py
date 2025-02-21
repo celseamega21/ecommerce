@@ -47,7 +47,7 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-class Product(models.Model):
+class Products(models.Model):
     STATUS_CHOICES = (
         ('DRAFT', 'Draft'),
         ('PUBLISHED', 'Published'),
@@ -84,9 +84,16 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.subcategory.name} - {self.name}"
     
+    @property
+    def current_price(self):
+        """Return discount price if available, otherwise return regular price"""
+        if self.discount_price and self.discount_price < self.price:
+            return self.discount_price
+        return self.price
+    
 
 class ProductReview(models.Model):
-    product_name = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_name = models.ForeignKey(Products, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
@@ -96,7 +103,7 @@ class ProductReview(models.Model):
 
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    product = models.ManyToManyField(Product) 
+    product = models.ManyToManyField(Products) 
 
     def __str__(self):
         return f"Wishlist of {self.user.username}"

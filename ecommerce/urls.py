@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from account.views import UserAllViewSet as UserAccountViewSet
 from product import views as v
+from rest_framework_simplejwt import views as tokenviews
 
 router = DefaultRouter()
 router.register(r'users', UserAccountViewSet, basename='user')
@@ -20,8 +21,8 @@ router.register(r'wishlists', v.WishlistViewSet, basename='wishlist')
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path('api/token/', views.CustomTokenObtainPairView.as_view(), name='custom_token_obtain_pair'),
-    path('api/token/refresh/', views.CustomTokenRefreshView.as_view(), name='custom_token_refresh'),
+    path('api/token/', tokenviews.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', tokenviews.TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/buyer/', views.BuyerRegisterView.as_view(), name='buyer_register'),
     path('api/register/seller/', views.SellerRegisterView.as_view(), name='seller_register'),
     path('api/logout/', views.LogOutView.as_view(), name='logout'),

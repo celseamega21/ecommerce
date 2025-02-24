@@ -39,7 +39,7 @@ class SellerSerializers(serializers.HyperlinkedModelSerializer):
             return user
 
 class UserRegistrationSerializers(serializers.ModelSerializer):
-    password2 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True) 
 
     class Meta:
         model = CustomUser

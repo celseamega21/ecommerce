@@ -9,6 +9,8 @@ class CategorySerializers(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class SubCategorySerializers(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
+
     class Meta:
         model = SubCategory
         fields = ['category', 'subcategory']
@@ -51,7 +53,7 @@ class ProductsSerializers(serializers.HyperlinkedModelSerializer):
         
 class WishlistProductSerializers(serializers.ModelSerializer):
     store = serializers.StringRelatedField()
-    
+
     class Meta:
         model = Products
         fields = ['name', 'store', 'status', 'stock']

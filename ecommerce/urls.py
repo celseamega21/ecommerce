@@ -5,7 +5,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from account.views import UserAllViewSet as UserAccountViewSet
-from product import views as v
+from product.api import views as v
 from rest_framework_simplejwt import views as tokenviews
 
 router = DefaultRouter()
@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/register/seller/', views.SellerRegisterView.as_view(), name='seller_register'),
     path('api/logout/', views.LogOutView.as_view(), name='logout'),
     path('admin/', admin.site.urls),
+    # path('product/', include('product.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

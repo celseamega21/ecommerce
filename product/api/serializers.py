@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, SubCategory, Store, Products, ProductReview, Wishlist
+from product.models import Category, SubCategory, Store, Products, ProductReview, Wishlist
 from account.serializers import CustomUserSerializers
 from account.models import CustomUser
 

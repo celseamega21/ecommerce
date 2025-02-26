@@ -6,6 +6,8 @@ from .serializers import UserRegistrationSerializers, BuyerSerializers, SellerSe
 from account.models import CustomUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import render
+
 
 class BuyerRegisterView(generics.CreateAPIView):
     serializer_class = UserRegistrationSerializers
@@ -62,3 +64,5 @@ class SellerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     
+def home(request):
+    return render()

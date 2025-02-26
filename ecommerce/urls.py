@@ -23,7 +23,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token/', tokenviews.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', tokenviews.TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/product/search/', v.SearchProduct.as_view(), name='search_product'),
     path('api/register/buyer/', views.BuyerRegisterView.as_view(), name='buyer_register'),
     path('api/register/seller/', views.SellerRegisterView.as_view(), name='seller_register'),
     path('api/logout/', views.LogOutView.as_view(), name='logout'),

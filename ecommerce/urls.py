@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 from account.views import UserAllViewSet as UserAccountViewSet
 from product import views as v
 from rest_framework_simplejwt import views as tokenviews
+from cart.api.views import CartViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserAccountViewSet, basename='user')
@@ -18,6 +19,7 @@ router.register(r'stores', v.StoreViewSet, basename='store')
 router.register(r'products', v.ProductsViewSet, basename='products')
 router.register(r'product-reviews', v.ProductReviewViewSet, basename='product-review')
 router.register(r'wishlists', v.WishlistViewSet, basename='wishlist')
+router.register(r'cart', CartViewSet, basename='cart')
 
 urlpatterns = [
     path('api/', include(router.urls)),

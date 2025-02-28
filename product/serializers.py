@@ -40,7 +40,9 @@ class ProductsSerializers(serializers.HyperlinkedModelSerializer):
 
     def get_product_detail(self, obj):
         return {
-            "price": obj.price - obj.discount,
+            "price": obj.price,
+            "discount": obj.discount,
+            "final_price": obj.price - obj.discount,
             "status": obj.status,
             "stock": obj.stock,
             "category": obj.category.name,

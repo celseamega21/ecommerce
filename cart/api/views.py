@@ -67,7 +67,6 @@ class CartViewSet(viewsets.GenericViewSet):
     def update_item(self, request):
         """
         PUT api/cart/update_item/
-        PATCH api/cart/update_item/
         Update quantity of cart item
         """
         item_id = request.data.get('item_id')

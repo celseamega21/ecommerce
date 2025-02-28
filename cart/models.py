@@ -8,8 +8,8 @@ class Cart(models.Model):
     updated_at = models.DateField(auto_now=True)
     
     @property
-    def total_items(self):
-        return sum(item.quantity for item in self.items.all())
+    def get_total_items(self, obj):
+        return sum(item.quantity for item in obj.items.all())
 
     def __str__(self):
         return f"Cart {self.id} - {self.user.username}"
@@ -17,7 +17,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Products, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)

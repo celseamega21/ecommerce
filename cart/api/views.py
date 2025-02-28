@@ -33,14 +33,14 @@ class CartViewSet(viewsets.GenericViewSet):
         Add item to cart
         """
         product_id = request.data.get('product_id')
-        quantity = int(request.data.get('quantity', 1))
+        quantity = int(request.data.get('quantity'))
 
-        if not product_id:
+        if not product_id or quantity is None:
             return Response(
-                {'error': 'Product ID is required'},
+                {'error': 'Product ID and quantity is required'},
                 status=status.HTTP_400_BAD_REQUEST
                 )
-        
+
         try:
             product = Products.objects.get(id=product_id)
         except Products.DoesNotExist:
@@ -48,7 +48,7 @@ class CartViewSet(viewsets.GenericViewSet):
                 {'error': 'Product not found'},
                 status=status.HTTP_404_NOT_FOUND
                 )
-        
+ 
         cart = self.get_or_create_cart()
 
         # Check if product available in cart
@@ -56,10 +56,19 @@ class CartViewSet(viewsets.GenericViewSet):
                                                             product=product,
                                                             defaults={'price': product.price, 'quantity': quantity})
         
-        # If it already exists, add quantity
-        if not created:
-            cart_item.quantity += quantity
-            cart_item.save()
+        # Total items already in cart
+        existing_quantity = cart_item.quantity if not created else 0
+
+        available_stock = product.stock - existing_quantity
+
+        if created:
+            cart_item.quantity = quantity
+        else:
+            if cart_item.quantity + quantity > product.stock:
+                return Response({'error': f'Maximum stock available: {available_stock}'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        cart_item.save()
 
         return Response(self.get_serializer(cart).data)
     
@@ -70,13 +79,13 @@ class CartViewSet(viewsets.GenericViewSet):
         Update quantity of cart item
         """
         item_id = request.data.get('item_id')
-        quantity = int(request.data.get('quantity', 1))
+        quantity = int(request.data.get('quantity'))
 
-        if not item_id:
+        if not item_id or quantity is None:
             return Response(
-                {'error': 'Item ID is required'},
+                {'error': 'Product ID and quantity is required'},
                 status=status.HTTP_400_BAD_REQUEST
-            )
+                )
         
         cart = self.get_or_create_cart()
 
@@ -88,11 +97,14 @@ class CartViewSet(viewsets.GenericViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         
-        if quantity <= 0:
-            cart_item.delete()
-        else:
-            cart_item.quantity = quantity
-            cart_item.save()
+        product = cart_item.product
+
+        if cart_item.quantity + quantity > product.stock:
+            return Response({'error': f'Maximum stock available: {product.stock}'},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        cart_item.quantity = quantity
+        cart_item.save()
 
         return Response(self.get_serializer(cart).data)
     

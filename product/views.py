@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, views, status
 from .serializers import (CategorySerializers, SubCategorySerializers, StoreSerializers, 
                           ProductsSerializers, ProductReviewSerializers, WishlistSerializers)
-from ecommerce import permissions as custom_permissions
+from account import permissions as custom_permissions
 from .models import Category, SubCategory, Store, Products, ProductReview, Wishlist
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
@@ -35,7 +35,7 @@ class ProductsViewSet(viewsets.ModelViewSet):
     filterset_class = ProductFilter
     lookup_field = 'slug'
 
-class ProductReviewViewSet(viewsets.ReadOnlyModelViewSet):
+class ProductReviewViewSet(viewsets.ModelViewSet):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializers
     permission_classes = [permissions.AllowAny]

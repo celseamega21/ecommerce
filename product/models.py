@@ -1,5 +1,4 @@
 from django.db import models
-from account.models import CustomUser
 from django.utils.timezone import now
 from django.utils.text import slugify
 from django.conf import settings
@@ -98,5 +97,4 @@ class Wishlist(models.Model):
     product = models.ManyToManyField(Products) 
 
     def __str__(self):
-        return f"Wishlist of {self.user.username}"
-    
+        return f"Wishlist of {self.user.username}"    

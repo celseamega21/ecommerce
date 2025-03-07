@@ -54,7 +54,7 @@ class CartViewSet(viewsets.GenericViewSet):
         # Check if product available in cart
         cart_item, created = CartItem.objects.get_or_create(cart=cart,
                                                             product=product,
-                                                            defaults={'price': product.price, 'quantity': quantity})
+                                                            defaults={'quantity': quantity})
         
         # Total items already in cart
         existing_quantity = cart_item.quantity if not created else 0

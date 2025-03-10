@@ -1,8 +1,8 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from .models import *
 from cart.models import Cart
 from account.models import CustomUser
-from django.utils import timezone
+from rest_framework.response import Response
 
 class PaymentsSerializers(serializers.ModelField):
     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
@@ -38,6 +38,31 @@ class OrderSerializers(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         return sum((item.product.price - item.product.discount) * item.quantity for item in obj.items.all())
+    
+    def validate(self, attrs):
+        items = attrs.get("items", [])
+
+        if not items:
+            raise serializers.ValidationError({"error": "At least one item is required in the order."})
+
+        for item in items:
+            product_data = item.get('product', {})
+            product_id = product_data.get("id")
+            
+            try:
+                product =  Products.objects.get(id=product_id)
+            except Products.DoesNotExist:
+                raise serializers.ValidationError({"error": f"Product with ID {product_id} does not exist."})
+
+            quantity = item.get("quantity")
+
+            if not quantity or quantity <= 0:
+                raise ValidationError({"error": "Quantity must be greater than 0."})
+
+            if quantity > product.stock:
+                raise serializers.ValidationError({"error": f"Stock not enough for {product.name}. Only {product.stock} stock left available."})
+
+        return attrs
 
     def create(self, validated_data):
         """
@@ -122,7 +147,7 @@ class OrderSerializers(serializers.ModelSerializer):
                 total_price += quantity * product.price
 
             # Delete all old OrderItem and create new ones
-            instance.itens.all().delete()
+            instance.items.all().delete()
             OrderItem.objects.create(order_items)
 
             instance.total = total_price
@@ -139,29 +164,4 @@ class OrderSerializers(serializers.ModelSerializer):
             raise serializers.ValidationError({"error": "The order has been processed and cannot be deleted."})
 
         instance.delete()
-        return {"success": "Order deleted successfully."}
-    
-    def validate(self, attrs):
-        items = attrs.get("items", [])
-
-        if not items:
-            raise serializers.ValidationError({"error": "At least one item is required in the order."})
-
-        for item in items:
-            product_data = item.get('product', {})
-            product_id = product_data.get("id")
-            
-            try:
-                product =  Products.objects.get(id=product_id)
-            except Products.DoesNotExist:
-                raise serializers.ValidationError({"error": f"Product with ID {product_id} does not exist."})
-
-            quantity = item.get("quantity")
-
-            if not quantity or quantity <= 0:
-                raise ValidationError({"error": "Quantity must be greater than 0."})
-
-            if quantity > product.stock:
-                raise serializers.ValidationError({"error": f"Stock not enough for {product.name}\nOnly {product.stock} stock left available."})
-
-        return attrs
+        return Response({"success": "Order deleted successfully."}, status=status.HTTP_204_NO_CONTENT)

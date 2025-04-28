@@ -1,2 +1,2 @@
-# ecommerce
-E-Commerce API with Django REST Framework
+# Ecommerce API with Django REST Framework
+For practice purposes
